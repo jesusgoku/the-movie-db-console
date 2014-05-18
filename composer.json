@@ -1,0 +1,15 @@
+{
+    "require": {
+        "symfony/console": "2.5.x-dev",
+        "symfony/finder": "2.5.x-dev",
+        "guzzle/guzzle": "3.8.x-dev",
+        "symfony/config": "2.5.x-dev",
+        "symfony/yaml": "2.5.x-dev",
+        "twig/twig": "1.15.x-dev"
+    },
+    "autoload": {
+        "psr-0": {
+            "": "src/"
+        }
+    }
+}
