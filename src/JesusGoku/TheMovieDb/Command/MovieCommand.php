@@ -20,6 +20,8 @@ class MovieCommand extends Command
     private $config_tmdb;
     private $options;
 
+    private $output;
+
     protected function configure()
     {
         $this
@@ -61,6 +63,7 @@ class MovieCommand extends Command
             'overwrite-xml' => $input->getOption('overwrite-xml'),
             'overwrite-image' => $input->getOption('overwrite-image'),
         );
+        $this->output = $output;
 
 
         // -- Load config
