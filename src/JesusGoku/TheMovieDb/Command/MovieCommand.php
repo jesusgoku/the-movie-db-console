@@ -243,6 +243,9 @@ class MovieCommand extends Command
             // -- Save XML file
             file_put_contents($fileInfo['dirname'] . '/' . $fileInfo['filename'] . '.xml', $xml);
             // -- Save Image file
+            if (!isset($item['poster_path'])) {
+                continue;
+            }
             $imagePath = $fileInfo['dirname'] . '/' . $fileInfo['filename'] . '.jpg';
             if (!$this->options['overwrite-image'] && file_exists($imagePath)) {
                 continue;
