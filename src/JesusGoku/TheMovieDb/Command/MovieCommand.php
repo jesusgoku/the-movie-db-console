@@ -37,7 +37,7 @@ class MovieCommand extends Command
                 null,
                 InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED,
                 'Format to scan directories',
-                array('avi', 'mov', 'mp4')
+                array('avi', 'mov', 'mp4', 'mkv')
             )
             ->addOption(
                 'overwrite-xml',
