@@ -168,6 +168,7 @@ class MovieCommand extends Command
     private function searchMovies($data)
     {
         $client = new Client($this->config['api_base_url']);
+        $found = array();
         foreach ($data as $k => $item) {
             $request = $client->get('search/movie', array(), array(
                 'query' => array(
@@ -184,10 +185,13 @@ class MovieCommand extends Command
                 $data[$k]['id'] = $json['results'][0]['id'];
                 $data[$k]['release_date'] = $json['results'][0]['release_date'];
                 $data[$k]['original_title'] = $json['results'][0]['original_title'];
+                $found[$k] = $data[$k];
+            } else {
+                $this->output->writeln($item['title'] . ' (' . $item['year'] . ') not found.');
             }
         }
 
-        return $data;
+        return $found;
     }
 
     private function getMoviesDetails($data)
