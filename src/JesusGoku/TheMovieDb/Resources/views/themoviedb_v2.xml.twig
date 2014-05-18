@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<details>
+    <id>{{ movie.id }}</id>
+    <imdb_id>{{ movie.imdb_id }}</imdb_id>
+    <title>{{ movie.title }}</title>
+    <originaltitle>{{ movie.original_title }}</originaltitle>
+    <year>{{ movie.release_date }}</year>
+    <overview>{{ movie.overview }}</overview>
+    <plot>{{ movie.overview }}</plot>
+    <rating>{{ movie.vote_average }}</rating>
+    {% if movie.mpaa is defined %}<mpaa>{{ movie.mpaa }}</mpaa>{% endif %}
+    <runtime>{{ movie.runtime }}</runtime>
+
+    {% for item in movie.credits.crew %}
+    {% if 'Director' == item.job %}
+    <director>{{ item.name }}</director>
+    {% endif %}
+    {% endfor %}
+
+    {% if movie.production_companies is defined and movie.production_companies is not empty %}
+    {% for item in movie.production_companies %}
+    <studio>{{ item.name }}</studio>
+    {% endfor %}
+    {% endif %}
+
+    {% if movie.trailers is defined and movie.trailers.youtube is defined and movie.trailers.youtube is not empty %}
+    <trailer>http://www.youtube.com/watch?v={{ (movie.trailers.youtube | first).source }}</trailer>
+    {% endif %}
+
+    {% for item in movie.genres %}
+    <genre>{{ item.name }}</genre>
+    {% endfor %}
+
+    {% for item in movie.credits.cast %}
+    <actor>
+        <name>{{ item.name }}</name>
+        <role>{{ item.character }}</role>
+    </actor>
+    {% endfor %}
+
+    {% for item in movie.images.posters %}
+    <thumbnail>{{ config_tmdb.images.base_url ~ config.poster_size ~ item.file_path }}</thumbnail>
+    {% endfor %}
+
+    {% for item in movie.images.backdrops %}
+    <backdrop>{{ config_tmdb.images.base_url ~ config.backdrop_size ~ item.file_path }}</backdrop>
+    {% endfor %}
+
+    <url cache="tmdb-.xml" function="GetTMDBThumbsById" />
+    <prevtitle>{{ movie.prev_title }}</prevtitle>
+</details>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<details>
+    <id>{{ id }}</id>
+    <imdb_id>{{ imdb_id }}</imdb_id>
+    <title>{{ title }}</title>
+    <originaltitle>{{ original_title }}</originaltitle>
+    <year>{{ release_date }}</year>
+    <overview>{{ overview }}</overview>
+    <plot>{{ plot }}</plot>
+    <rating>{{ rating }}</rating>
+    <mpaa>{{ mpaa }}</mpaa>
+    <runtime>{{ runtime }}</runtime>
+    <director>{{ director }}</director>
+    {% if studio is defined %}
+    <studio>{{ studio }}</studio>
+    {% endif %}
+    {% if trailer is defined %}
+    <trailer>{{ trailer }}</trailer>
+    {% endif %}
+    {% for item in genres %}
+    <genre>{{ item }}</genre>
+    {% endfor %}
+    {% for item in actors %}
+    <actor>
+        <name>{% item.name %}</name>
+        {% if item.role is defined %}
+        <role>{{ item.role }}</role>
+        {% endif %}
+    </actor>
+    {% endfor %}
+    {% for item in thumbnails %}
+    <thumbnail>{{ base_url ~ backdrop_size ~ item }}</thumbnail>
+    {% endfor %}
+    {% for item in backdrops %}
+    <backdrop>{{ base_url ~ poster_size ~ item }}</backdrop>
+    {% endfor %}
+    <url cache="tmdb-.xml" function="GetTMDBThumbsById" />
+    <prevtitle>{{ prev_title }}</prevtitle>
+</details>
