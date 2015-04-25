@@ -98,7 +98,7 @@ class MovieCommand extends Command
         $data = $this->getMoviesDetails($data);
 
         // -- Make XML
-        $this->makeXmlandImage($data);
+        $this->makeXmlAndImage($data);
     }
 
     private function processFilesInput($filesInput, $formats)
@@ -230,7 +230,7 @@ class MovieCommand extends Command
         return $data;
     }
 
-    private function makeXmlandImage($data)
+    private function makeXmlAndImage($data)
     {
         $loader = new \Twig_Loader_Filesystem(__DIR__ . '/../Resources/views');
         $twig = new \Twig_Environment($loader, array(
