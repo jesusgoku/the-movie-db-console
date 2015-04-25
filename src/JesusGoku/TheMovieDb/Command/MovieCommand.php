@@ -26,6 +26,7 @@ class MovieCommand extends Command
     {
         $this
             ->setName('themoviedb:movie')
+            ->setAliases(array('tmdb:m'))
             ->setDescription('Download info from The Movie DB for your movies')
             ->addArgument(
                 'files',
@@ -98,8 +99,6 @@ class MovieCommand extends Command
 
         // -- Make XML
         $this->makeXmlandImage($data);
-
-        $output->writeln('Hello World! ...');
     }
 
     private function processFilesInput($filesInput, $formats)
