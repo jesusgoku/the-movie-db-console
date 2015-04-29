@@ -25,8 +25,7 @@ class MovieCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('themoviedb:movie')
-            ->setAliases(array('tmdb:m'))
+            ->setName('movie:covered')
             ->setDescription('Download info from The Movie DB for your movies')
             ->addArgument(
                 'files',
