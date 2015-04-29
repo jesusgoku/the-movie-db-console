@@ -57,9 +57,9 @@ class TheMovieDbService implements MovieServiceInterface
             'language' => (null !== $language && 2 === strlen($language)) ? $language : $this->defaultLanguage,
         );
 
-        if (null !== $year && is_int($year)) { $query['year'] = $year; }
+        if (null !== $year && preg_match('/^\d{4}$/', $year)) { $query['year'] = $year; }
 
-        $request = $this->client->get('', array(), array(
+        $request = $this->client->get('search/movie', array(), array(
             'query' => $query,
         ));
         $response = $request->send();
