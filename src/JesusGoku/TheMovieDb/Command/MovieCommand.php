@@ -75,6 +75,7 @@ class MovieCommand extends Command
         $processor = new Processor();
         $configuration = new TheMovieDbConfiguration();
         $this->config = $processor->processConfiguration($configuration, $configs);
+        $this->config = $this->config['themoviedb'];
 
         // -- Load The Movie DB Configuration
         $client = new Client($this->config['api_base_url']);
