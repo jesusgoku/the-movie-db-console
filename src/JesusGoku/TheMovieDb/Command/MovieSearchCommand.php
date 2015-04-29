@@ -32,6 +32,7 @@ class MovieSearchCommand extends Command
             ->setDescription('Search movie')
             ->addArgument('query', InputArgument::REQUIRED, 'Movie query to search')
             ->addOption('year', 'y', InputOption::VALUE_REQUIRED, 'Year of release movie')
+            ->addOption('language', 'l', InputOption::VALUE_REQUIRED, 'Language to result (en, es)')
         ;
     }
 
@@ -49,7 +50,11 @@ class MovieSearchCommand extends Command
 
         // -- Search Movie
         $movieService = new TheMovieDbService($this->config['api_key']);
-        $result = $movieService->search($input->getArgument('query'), $input->getOption('year'));
+        $result = $movieService->search(
+            $input->getArgument('query'),
+            $input->getOption('year'),
+            $input->getOption('language')
+        );
 
         /** @var Table $table */
         $table = $this->getHelper('table');
