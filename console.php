@@ -3,12 +3,16 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
+use JesusGoku\TheMovieDb\Application\TheMovieDbApplication;
 use JesusGoku\TheMovieDb\Command as TheMovieDb;
 
-$app = new \Symfony\Component\Console\Application();
+$app = new TheMovieDbApplication();
 
+// -- Movie Commands
 $app->add(new TheMovieDb\MovieCommand());
 $app->add(new TheMovieDb\MovieSearchCommand());
+
+// -- TVShow Commands
 $app->add(new TheMovieDb\TvShowSearchCommand());
 
 $app->run();
