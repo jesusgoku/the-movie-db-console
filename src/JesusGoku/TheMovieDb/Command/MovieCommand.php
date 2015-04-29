@@ -67,14 +67,7 @@ class MovieCommand extends Command
 
 
         // -- Load config
-        $config1 = Yaml::parse(__DIR__ . '/../Resources/config/config.yml');
-
-        $configs = array($config1);
-
-        $processor = new Processor();
-        $configuration = new TheMovieDbConfiguration();
-        $this->config = $processor->processConfiguration($configuration, $configs);
-        $this->config = $this->config['themoviedb'];
+        $this->config = $this->getApplication()->getTheMovieDbConfig();
 
         // -- Load The Movie DB Configuration
         $client = new Client($this->config['api_base_url']);

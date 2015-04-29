@@ -39,14 +39,7 @@ class TvShowSearchCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // -- Load config
-        $config1 = Yaml::parse(__DIR__ . '/../Resources/config/config.yml');
-
-        $configs = array($config1);
-
-        $processor = new Processor();
-        $configuration = new TheMovieDbConfiguration();
-        $this->config = $processor->processConfiguration($configuration, $configs);
-        $this->config = $this->config['thetvdb'];
+        $this->config = $this->getApplication()->getTheTvDbConfig();
 
         $tvShowService = new TheTvDbService($this->config['api_key'], $this->config['language']);
 
