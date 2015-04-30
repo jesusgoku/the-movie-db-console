@@ -25,6 +25,13 @@ class FileSystemScan
         $this->config = array_merge($this->defaults, $options);
     }
 
+    /**
+     * Search movie files on folder
+     *
+     * @param string $folderPath
+     *
+     * @return array
+     */
     public function findMovies($folderPath)
     {
         $finder = new Finder();
@@ -46,9 +53,34 @@ class FileSystemScan
         return $files;
     }
 
-    public function extractMovieInfo()
+    /**
+     * Process file names to extract information (Title and Year)
+     *
+     * @param array $files
+     *
+     * @return array
+     */
+    public function extractMoviesInfo($files)
     {
+        $data = array();
 
+        foreach ($files as $item) {
+            $fileInfo = pathinfo($item);
+
+            $matches = array();
+            if (!preg_match('/^(.+)\.(\d{4})\..+$/', $fileInfo['basename'], $matches)) {
+                continue;
+            }
+
+            $data[] = array(
+                'title' => str_replace('.', ' ', $matches[1]),
+                'year' => $matches[2],
+                'prev_title' => $fileInfo['basename'],
+                'path' => $item,
+            );
+        }
+
+        return $data;
     }
 
     public function findTvShows()
