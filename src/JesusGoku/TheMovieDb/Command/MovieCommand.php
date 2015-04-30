@@ -3,6 +3,7 @@
 namespace JesusGoku\TheMovieDb\Command;
 
 use Guzzle\Http\Client;
+use JesusGoku\TheMovieDb\Service\TheMovieDbService;
 use JesusGoku\TheMovieDb\Util\FileSystemScan;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -27,6 +28,9 @@ class MovieCommand extends Command
 
     /** @var FileSystemScan */
     private $fileSystemScan;
+
+    /** @var TheMovieDbService */
+    private $tmdbService;
 
     protected function configure()
     {
@@ -88,6 +92,7 @@ class MovieCommand extends Command
         $this->fileSystemScan = new FileSystemScan(array(
             'extensions' => $formats,
         ));
+        $this->tmdbService = new TheMovieDbService($this->config['api_key']);
 
         // -- Load files
         $files = $this->processFilesInput($filesInput, $formats);
@@ -149,25 +154,17 @@ class MovieCommand extends Command
 
     private function searchMovies($data)
     {
-        $client = new Client($this->config['api_base_url']);
         $found = array();
         foreach ($data as $k => $item) {
-            $request = $client->get('search/movie', array(), array(
-                'query' => array(
-                    'api_key' => $this->config['api_key'],
-                    'query' => $item['title'],
-                    'year' => $item['year'],
-                )
-            ));
+            $result = $this->tmdbService->search($item['title'], $item['year']);
+            if (!empty($result)) {
+                $temp = array(
+                    'id' => $result[0]['id'],
+                    'release_date' => $result[0]['release_date'],
+                    'original_title' => $result[0]['original_title'],
+                );
 
-            $response = $request->send();
-            $json = $response->json();
-
-            if (0 < count($json['results'])) {
-                $data[$k]['id'] = $json['results'][0]['id'];
-                $data[$k]['release_date'] = $json['results'][0]['release_date'];
-                $data[$k]['original_title'] = $json['results'][0]['original_title'];
-                $found[$k] = $data[$k];
+                $found[$k] = array_merge($data[$k], $temp);
             } else {
                 $this->output->writeln($item['title'] . ' (' . $item['year'] . ') not found.');
             }
