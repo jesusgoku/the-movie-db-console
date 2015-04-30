@@ -67,4 +67,44 @@ class TheMovieDbService implements MovieServiceInterface
 
         return $result['results'];
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMovieDetail($movie_id, $language = null, $options = null)
+    {
+        $attributes = array(
+            'alternative_titles',
+            'credits',
+            'images',
+            'keywords',
+            'releases',
+            'trailers',
+            'translations',
+            'similar_movies',
+            'reviews',
+            'lists',
+            'changes',
+        );
+
+        $query = array(
+            'api_key' => $this->api_key,
+            'append_to_response' => implode(',', $attributes),
+            'language' => null !== $language ? $language : $this->defaultLanguage,
+        );
+
+        if (null !== $options && is_array($options)) {
+            if (isset($options['api_key'])) { unset($options['api_key']); }
+            if (isset($options['language'])) { unset($options['language']); }
+            $query = array_merge($query, $options);
+        }
+
+        $request = $this->client->get('movie/' . $movie_id, array(), array(
+            'query' => $query,
+        ));
+
+        $response = $request->send();
+
+        return $response->json();
+    }
 }

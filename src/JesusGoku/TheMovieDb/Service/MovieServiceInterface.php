@@ -21,4 +21,15 @@ interface MovieServiceInterface
      * @return array
      */
     public function search($query, $year = null, $language = null);
+
+    /**
+     * Get Movie details
+     *
+     * @param string $movie_id The Movie DB ID
+     * @param null|string $language
+     * @param null|array $options
+     *
+     * @return array
+     */
+    public function getMovieDetail($movie_id, $language = null, $options = null);
 }
