@@ -3,24 +3,30 @@
 namespace JesusGoku\TheMovieDb\Command;
 
 use Guzzle\Http\Client;
-use Guzzle\Http\StaticClient;
-use JesusGoku\TheMovieDb\DependencyInjection\TheMovieDbConfiguration;
-use Symfony\Component\Config\Definition\Processor;
+use JesusGoku\TheMovieDb\Util\FileSystemScan;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Yaml\Yaml;
 
 class MovieCommand extends Command
 {
+    /** @var array */
     private $config;
+
+    /** @var array */
     private $config_tmdb;
+
+    /** @var array */
     private $options;
 
+    /** @var OutputInterface */
     private $output;
+
+    /** @var FileSystemScan */
+    private $fileSystemScan;
 
     protected function configure()
     {
@@ -78,11 +84,16 @@ class MovieCommand extends Command
         ));
         $this->config_tmdb = $request->send()->json();
 
+        // -- Load utils
+        $this->fileSystemScan = new FileSystemScan(array(
+            'extensions' => $formats,
+        ));
+
         // -- Load files
         $files = $this->processFilesInput($filesInput, $formats);
 
         // -- Parse file names
-        $data = $this->processFiles($files);
+        $data = $this->fileSystemScan->extractMoviesInfo($files);
 
         // -- Search for files
         $data = $this->searchMovies($data);
@@ -94,37 +105,16 @@ class MovieCommand extends Command
         $this->makeXmlAndImage($data);
     }
 
-    private function processFilesInput($filesInput, $formats)
+    private function processFilesInput($filesInput)
     {
         $files = array();
 
         foreach ($filesInput as $item) {
             if (is_dir($item)) {
-                $files = array_merge($files, $this->processFolder($item, $formats));
+                $files = array_merge($files, $this->fileSystemScan->findMovies($item));
             } else {
                 $files[] = $item;
             }
-        }
-
-        return $files;
-    }
-
-    private function processFolder($folderPath, $formats)
-    {
-        $finder = new Finder();
-        $formatsString = implode('|', $formats);
-
-        $finder
-            ->files()
-            ->name('/\.(?:' . $formatsString  . ')$/')
-            ->depth(0)
-            ->in($folderPath)
-        ;
-
-
-        $files = array();
-        foreach ($finder as $item) {
-            $files[] = $item->getRealpath();
         }
 
         return $files;
