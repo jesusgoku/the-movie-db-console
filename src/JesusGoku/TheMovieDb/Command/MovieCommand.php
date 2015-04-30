@@ -92,7 +92,11 @@ class MovieCommand extends Command
         $this->fileSystemScan = new FileSystemScan(array(
             'extensions' => $formats,
         ));
-        $this->tmdbService = new TheMovieDbService($this->config['api_key']);
+        // -- TheMovieDBService
+        $this->tmdbService = new TheMovieDbService(
+            $this->config['api_key'],
+            $this->config['language']
+        );
 
         // -- Load files
         $files = $this->processFilesInput($filesInput, $formats);
@@ -125,37 +129,16 @@ class MovieCommand extends Command
         return $files;
     }
 
-    private function processFiles($files)
-    {
-        $data = array();
-
-        foreach ($files as $item) {
-            $fileInfo = pathinfo($item);
-
-            if (!$this->options['overwrite-xml'] && file_exists($fileInfo['dirname'] . '/' . $fileInfo['filename'] . '.xml')) {
-                continue;
-            }
-
-            $matches = array();
-            if (!preg_match('/^(.+)\.(\d{4})\..+$/', $fileInfo['basename'], $matches)) {
-                continue;
-            }
-
-            $data[] = array(
-                'title' => str_replace('.', ' ', $matches[1]),
-                'year' => $matches[2],
-                'prev_title' => $fileInfo['basename'],
-                'path' => $item,
-            );
-        }
-
-        return $data;
-    }
-
     private function searchMovies($data)
     {
         $found = array();
         foreach ($data as $k => $item) {
+            // -- Verify if movie has metadata
+            $fileInfo = pathinfo($item['path']);
+            if (!$this->options['overwrite-xml'] && file_exists($fileInfo['dirname'] . '/' . $fileInfo['filename'] . '.xml')) {
+                continue;
+            }
+
             $result = $this->tmdbService->search($item['title'], $item['year']);
             if (!empty($result)) {
                 $temp = array(
@@ -175,30 +158,16 @@ class MovieCommand extends Command
 
     private function getMoviesDetails($data)
     {
-        $client = new Client($this->config['api_base_url']);
         foreach ($data as $k => $item) {
             if (!isset($item['id'])) {
                 continue;
             }
-
-            $request = $client->get('movie/' . $item['id'], array(), array(
-                'query' => array(
-                    'api_key' => $this->config['api_key'],
-                    'append_to_response' => 'alternative_titles,credits,images,keywords,releases,trailers,translations,similar_movies,reviews,lists,changes',
-                )
-            ));
-
-            $movieRaw = $request->send()->json();
+            $movieRaw = $this->tmdbService->getMovieDetail($item['id'], 'en');
 
             if ('en' !== $this->config['language']) {
-                $request = $client->get('movie/' . $item['id'], array(), array(
-                    'query' => array(
-                        'api_key' => $this->config['api_key'],
-                        'language' => $this->config['language'],
-                    )
+                $movieLocale = $this->tmdbService->getMovieDetail($item['id'], null, array(
+                    'append_to_response' => '',
                 ));
-
-                $movieLocale = $request->send()->json();
 
                 $movieRaw['title'] = $movieLocale['title'];
                 $movieRaw['overview'] = $movieLocale['overview'];
