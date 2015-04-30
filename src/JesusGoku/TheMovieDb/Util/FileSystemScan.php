@@ -2,6 +2,8 @@
 
 namespace JesusGoku\TheMovieDb\Util;
 
+use Symfony\Component\Finder\Finder;
+
 /**
  * Class FileSystemUtil
  * @package JesusGoku\TheMovieDb\Util
@@ -25,7 +27,23 @@ class FileSystemScan
 
     public function findMovies($folderPath)
     {
+        $finder = new Finder();
+        $formatsString = implode('|', $this->config['extensions']);
 
+        $finder
+            ->files()
+            ->name('/\.(?:' . $formatsString  . ')$/')
+            ->depth(0)
+            ->in($folderPath)
+        ;
+
+
+        $files = array();
+        foreach ($finder as $item) {
+            $files[] = $item->getRealpath();
+        }
+
+        return $files;
     }
 
     public function extractMovieInfo()
