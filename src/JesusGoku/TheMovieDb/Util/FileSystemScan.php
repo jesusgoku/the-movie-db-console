@@ -83,8 +83,25 @@ class FileSystemScan
         return $data;
     }
 
-    public function findTvShows()
+    public function findTvShows($folderPath)
     {
+        $finder = new Finder();
+        $formatsString = implode('|', $this->config['extensions']);
+
+        $finder
+            ->files()
+            ->name('/\.(?:' . $formatsString  . ')$/')
+            ->depth(0)
+            ->in($folderPath)
+        ;
+
+
+        $files = array();
+        foreach ($finder as $item) {
+            $files[] = $item->getRealpath();
+        }
+
+        return $files;
 
     }
 }
