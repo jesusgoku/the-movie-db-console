@@ -70,20 +70,20 @@ class TheTvDbService implements TvShowServiceInterface
      */
     public function search($tvShowName, $language = null)
     {
-        $request = $this->client->get('GetSeries.php', array(), array(
+        $req = $this->client->get('GetSeries.php', array(), array(
             'query' => array(
                 'seriesname' => $tvShowName,
                 'language' => null !== $language ? $language : $this->defaultLanguage,
             ),
         ));
 
-        $response = $request->send();
-        $xml = simplexml_load_string($response->getBody(true));
+        $res = $req->send();
+        $xml = $res->xml();
 
         $found = array();
         foreach ($xml->Series as $serie) {
             $item = array(
-                'id' => (string) $serie->seriesid,
+                'id' => (int) $serie->seriesid,
                 'name' => (string) $serie->SeriesName,
                 'overview' => (string) $serie->Overview,
                 'banner' => (string) $serie->banner,
@@ -109,10 +109,34 @@ class TheTvDbService implements TvShowServiceInterface
             ),
             $url_path
         );
-        $request = $this->client->get($url_path);
+        $req = $this->client->get($url_path);
 
-        $response = $request->send();
-        $xml = simplexml_load_string($response->getBody(true));
+        $res = $req->send();
+        $xml = $res->xml();
+
+        var_dump($xml);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getEpisodeByDefault($tvShowId, $season, $episode, $language = null)
+    {
+        $url_path = ':apiKey/series/:tvShowId/default/:season/:episode/:language.xml';
+        $url_path = str_replace(
+            array('apiKey', 'tvShowId', 'season', 'episode', 'language'),
+            array(
+                $this->api_key,
+                $tvShowId,
+                $season,
+                $episode,
+                (null !== $language ? $language : $this->defaultLanguage)
+            ),
+            $url_path
+        );
+        $req = $this->client->get($url_path);
+        $res = $req->send();
+        $xml = $res->xml();
 
         var_dump($xml);
     }
