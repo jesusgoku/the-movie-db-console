@@ -14,5 +14,6 @@ $app->add(new TheMovieDb\MovieSearchCommand());
 
 // -- TVShow Commands
 $app->add(new TheMovieDb\TvShowSearchCommand());
+$app->add(new TheMovieDb\TvShowEpisodeCommand());
 
 $app->run();
