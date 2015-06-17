@@ -30,4 +30,14 @@ interface TvShowServiceInterface
      * @return array
      */
     public function getEpisode($episodeId, $language = null);
+
+    /**
+     * Get detail about a tv show episode by default method
+     * @param int $tvShowId
+     * @param int $season
+     * @param int $episode
+     * @param string|null $language
+     * @return array
+     */
+    public function getEpisodeByDefault($tvShowId, $season, $episode, $language = null);
 }
