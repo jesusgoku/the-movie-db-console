@@ -9,5 +9,6 @@ $app = new \Symfony\Component\Console\Application();
 
 $app->add(new TheMovieDb\MovieCommand());
 $app->add(new TheMovieDb\TvShowSearchCommand());
+$app->add(new TheMovieDb\TvShowEpisodeCommand());
 
 $app->run();
