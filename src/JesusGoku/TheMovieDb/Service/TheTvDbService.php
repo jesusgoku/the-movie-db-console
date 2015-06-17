@@ -1,7 +1,10 @@
 <?php
 
 namespace JesusGoku\TheMovieDb\Service;
+use Doctrine\Common\Cache\FilesystemCache;
 use Guzzle\Http\Client;
+use Guzzle\Plugin\Cache\CachePlugin;
+use Guzzle\Plugin\Cache\DefaultCacheStorage;
 
 
 /**
@@ -21,6 +24,9 @@ class TheTvDbService implements TvShowServiceInterface
     /** @var Client */
     private $client;
 
+    /** @var CachePlugin */
+    private $cachePlugin;
+
     /** @var string */
     private $defaultLanguage;
 
@@ -30,14 +36,28 @@ class TheTvDbService implements TvShowServiceInterface
 
         $this->defaultLanguage = $defaultLanguage;
 
-        $this->client = new Client($this->base_url);
+        $this->initCachePlugin();
+        $this->initClient();
     }
 
     public function setBaseUrl($base_url)
     {
         $this->base_url = $base_url;
 
-        $this->client = new Client($base_url);
+        $this->initClient();
+    }
+
+    private function initClient()
+    {
+        $this->client = new Client($this->base_url);
+        $this->client->addSubscriber($this->cachePlugin);
+    }
+
+    private function initCachePlugin()
+    {
+        $this->cachePlugin = new CachePlugin(array(
+            'storage' => new DefaultCacheStorage(new FilesystemCache(sys_get_temp_dir())),
+        ));
     }
 
     public function setDefaultLanguage($language)
