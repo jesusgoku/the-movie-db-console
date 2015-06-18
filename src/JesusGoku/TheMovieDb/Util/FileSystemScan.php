@@ -104,4 +104,37 @@ class FileSystemScan
         return $files;
 
     }
+
+    /**
+     * Extract tv show info from filename
+     *
+     * @param string[] $files
+     * @return array
+     */
+    public function extractTvShowInfo(array $files)
+    {
+        $data = array();
+
+        foreach ($files as $file) {
+            $baseName = basename($file);
+
+            $matches = array();
+            if (!preg_match('/(.+)\.S(\d{1,2})E(\d{1,2})/i', $baseName, $matches)) {
+                if (!preg_match('/(.+)(\d{1,2})x(\d{1,2})/i', $baseName, $matches)) {
+                    continue;
+                }
+            }
+
+            $data[] = array(
+                'tvShow' => str_replace('.', ' ', $matches[1]),
+                'season' => (int) $matches['2'],
+                'episode' => (int) $matches['3'],
+                'path' => $file,
+                'basename' => basename($file),
+                'dirname' => dirname($file),
+            );
+        }
+
+        return $data;
+    }
 }
