@@ -18,6 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class TvShowEpisodeCommand extends Command
 {
+    /** @var array */
     private $config;
 
     protected function configure()
