@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<details>
+    <id>{{ episode.id }}</id>
+    <title>S{{ episode.seasonNumber|addZero }}E{{ episode.episodeNumber|addZero }} - {{ episode.name }}</title>
+    <series_name>{{ tvShow.name }}</series_name>
+    <episode_name>{{ episode.name }}</episode_name>
+    <season_number>{{ episode.seasonNumber }}</season_number>
+    <episode_number>{{ episode.episodeNumber }}</episode_number>
+    <firstaired>{{ episode.firstAired }}</firstaired>
+    <genre>{{ tvShow.genres | join(' / ') }}</genre>
+    <runtime>{{ tvShow.runtime }}</runtime>
+    <director>{{ episode.director | join(' / ') }}</director>
+    <actor>{{ tvShow.actors | join(' / ') }}</actor>
+    <overview>{{ episode.overview }}</overview>
+</details>
