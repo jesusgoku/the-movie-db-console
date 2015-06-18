@@ -148,6 +148,9 @@ class TheTvDbService implements TvShowServiceInterface
         return $this->processEpisode($xml->Episode);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getTvShow($tvShowId, $language = null)
     {
         $url_path = ':apiKey/series/:tvShowId/:language.xml';
@@ -166,11 +169,14 @@ class TheTvDbService implements TvShowServiceInterface
         return $this->processTvShow($xml->Series);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getBanners($tvShowId)
     {
         $url_path = ':apiKey/series/:tvShowId/banners.xml';
         $url_path = str_replace(
-            array(':apiKey', ':tvShowId', ':language'),
+            array(':apiKey', ':tvShowId'),
             array(
                 $this->apiKey,
                 $tvShowId
@@ -181,15 +187,19 @@ class TheTvDbService implements TvShowServiceInterface
         $xml = $res->xml();
 
         $banners = array_map(array($this, 'processBanner'), iterator_to_array($xml->Banner, false));
+        $banners = $this->processBanners($banners);
 
         return $banners;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getActors($tvShowId)
     {
         $url_path = ':apiKey/series/:tvShowId/actors.xml';
         $url_path = str_replace(
-            array(':apiKey', ':tvShowId', ':language'),
+            array(':apiKey', ':tvShowId'),
             array(
                 $this->apiKey,
                 $tvShowId
@@ -202,6 +212,36 @@ class TheTvDbService implements TvShowServiceInterface
         $actors = array_map(array($this, 'processActor'), iterator_to_array($xml->Actor, false));
 
         return $actors;
+    }
+
+    public function getAll($tvShowId, $language = null)
+    {
+        $url_path = ':apiKey/series/:tvShowId/all/:language.xml';
+        $url_path = str_replace(
+            array(':apiKey', ':tvShowId', ':language'),
+            array(
+                $this->apiKey,
+                $tvShowId,
+                (null !== $language ? $language : $this->defaultLanguage)
+            ),
+            $url_path
+        );
+        $res = $this->client->get($url_path)->send();
+        $xml = $res->xml();
+
+        $tvShow = array(
+            'tvShow' => $this->processTvShow($xml->Series),
+            'episodes' => array(),
+            'actors' => $this->getActors($tvShowId),
+            'banners' => $this->getBanners($tvShowId),
+        );
+
+        foreach ($xml->Episode as $item) {
+            $episode = $this->processEpisode($item);
+            $tvShow['episodes'][$episode['seasonNumber']][$episode['episodeNumber']] = $episode;
+        }
+
+        return $tvShow;
     }
 
     public function saveBanner($path, $dest)
@@ -262,7 +302,7 @@ class TheTvDbService implements TvShowServiceInterface
             'name' => (string) $xml->EpisodeName,
             'overview' => (string) $xml->Overview,
             'firstAired' => (string) $xml->FirstAired,
-            'director' => (string) $xml->Director,
+            'director' => $this->processPipeDelimited((string) $xml->Director),
             'guestStars' => $this->processPipeDelimited((string) $xml->GuestStars),
             'episodeNumber' => (int) $xml->EpisodeNumber,
             'seasonNumber' => (int) $xml->SeasonNumber,
@@ -312,6 +352,21 @@ class TheTvDbService implements TvShowServiceInterface
         return $banner;
     }
 
+    private function processBanners(array $banners)
+    {
+        $bannersOut = array();
+
+        foreach ($banners as $item) {
+            if (self::BANNER_TYPE_SEASON === $item['type']) {
+                $bannersOut[$item['type']][$item['season']][] = $item;
+            } else {
+                $bannersOut[$item['type']][] = $item;
+            }
+        }
+
+        return $bannersOut;
+    }
+
     /**
      * Process Actor xml element
      *
@@ -351,7 +406,7 @@ class TheTvDbService implements TvShowServiceInterface
         return explode('|', trim($str, '|'));
     }
 
-    private function bannerPath($path)
+    public function bannerPath($path)
     {
         return $this->baseBannerUrl . $path;
     }
