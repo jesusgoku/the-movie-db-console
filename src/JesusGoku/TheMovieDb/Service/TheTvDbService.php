@@ -214,6 +214,9 @@ class TheTvDbService implements TvShowServiceInterface
         return $actors;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getAll($tvShowId, $language = null)
     {
         $url_path = ':apiKey/series/:tvShowId/all/:language.xml';
@@ -244,6 +247,9 @@ class TheTvDbService implements TvShowServiceInterface
         return $tvShow;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function saveBanner($path, $dest)
     {
         $dirName = dirname($dest);
@@ -263,6 +269,19 @@ class TheTvDbService implements TvShowServiceInterface
     }
 
     /**
+     * Get real path for banner path
+     *
+     * @param string $path
+     * @return string
+     */
+    public function bannerPath($path)
+    {
+        return $this->baseBannerUrl . $path;
+    }
+
+    /**
+     * Process TvShow xml element
+     *
      * @param \SimpleXMLElement $xml
      * @return array
      */
@@ -352,6 +371,12 @@ class TheTvDbService implements TvShowServiceInterface
         return $banner;
     }
 
+    /**
+     * Process banner from server to divide by type
+     *
+     * @param array $banners
+     * @return array
+     */
     private function processBanners(array $banners)
     {
         $bannersOut = array();
@@ -404,10 +429,5 @@ class TheTvDbService implements TvShowServiceInterface
     private function processPipeDelimited($str)
     {
         return explode('|', trim($str, '|'));
-    }
-
-    public function bannerPath($path)
-    {
-        return $this->baseBannerUrl . $path;
     }
 }

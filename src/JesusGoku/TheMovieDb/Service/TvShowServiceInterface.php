@@ -65,4 +65,21 @@ interface TvShowServiceInterface
      * @return array
      */
     public function getActors($tvShowId);
+
+    /**
+     * Get all info for a tv show
+     *
+     * @param $tvShowId
+     * @param string|null $language
+     * @return array
+     */
+    public function getAll($tvShowId, $language = null);
+
+    /**
+     * Save banner path to dest
+     *
+     * @param string $path
+     * @param string $dest
+     */
+    public function saveBanner($path, $dest);
 }
