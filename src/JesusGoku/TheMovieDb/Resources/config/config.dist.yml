@@ -1,0 +1,10 @@
+themoviedb:
+  api_base_url: https://api.themoviedb.org/3
+  api_key:
+  language: es
+  backdrop_size: w1280
+  poster_size: w500
+thetvdb:
+  api_base_url: http://thetvdb.com/api
+  api_key:
+  language: es
