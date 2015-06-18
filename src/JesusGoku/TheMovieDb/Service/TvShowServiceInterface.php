@@ -22,6 +22,15 @@ interface TvShowServiceInterface
     public function search($tvShowName, $language = null);
 
     /**
+     * Get full tv show info
+     *
+     * @param int $tvShowId
+     * @param string|null $language
+     * @return array
+     */
+    public function getTvShow($tvShowId, $language = null);
+
+    /**
      * Get detail about a tv show episode
      *
      * @param string $episodeId
@@ -40,4 +49,20 @@ interface TvShowServiceInterface
      * @return array
      */
     public function getEpisodeByDefault($tvShowId, $season, $episode, $language = null);
+
+    /**
+     * Get banners
+     *
+     * @param int $tvShowId
+     * @return array
+     */
+    public function getBanners($tvShowId);
+
+    /**
+     * Get actors
+     *
+     * @param int $tvShowId
+     * @return array
+     */
+    public function getActors($tvShowId);
 }
