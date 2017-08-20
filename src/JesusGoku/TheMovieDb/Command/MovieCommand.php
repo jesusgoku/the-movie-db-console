@@ -61,6 +61,12 @@ class MovieCommand extends Command
                 InputOption::VALUE_NONE,
                 'Overwrite image file'
             )
+            ->addOption(
+                'kodi-only',
+                null,
+                InputOption::VALUE_NONE,
+                'Generate Kodi only'
+            )
         ;
     }
 
@@ -72,6 +78,7 @@ class MovieCommand extends Command
         $this->options = array(
             'overwrite-xml' => $input->getOption('overwrite-xml'),
             'overwrite-image' => $input->getOption('overwrite-image'),
+            'kodi-only' => $input->getOption('kodi-only'),
         );
         $this->output = $output;
 
@@ -133,6 +140,7 @@ class MovieCommand extends Command
     {
         $found = array();
         foreach ($data as $k => $item) {
+            usleep(300000);  // -- Prevent rate limit (40 request / 10 seconds)
             // -- Verify if movie has metadata
             $fileInfo = pathinfo($item['path']);
             if (!$this->options['overwrite-xml'] && file_exists($fileInfo['dirname'] . '/' . $fileInfo['filename'] . '.xml')) {
@@ -159,6 +167,7 @@ class MovieCommand extends Command
     private function getMoviesDetails($data)
     {
         foreach ($data as $k => $item) {
+            usleep(300000);  // -- Prevent rate limit (40 request / 10 seconds)
             if (!isset($item['id'])) {
                 continue;
             }
@@ -187,16 +196,28 @@ class MovieCommand extends Command
         ));
 
         foreach ($data as $item) {
-            $xml = $twig->render('themoviedb_v2.xml.twig', array(
+            $fileInfo = pathinfo($item['path']);
+
+            // -- Save XML file
+            if (!$this->options['kodi-only']) {
+                $xml = $twig->render('themoviedb_v2.xml.twig', array(
+                    'movie' => $item,
+                    'config' => $this->config,
+                    'config_tmdb' => $this->config_tmdb,
+                ));
+                file_put_contents($fileInfo['dirname'] . '/' . $fileInfo['filename'] . '.xml', $xml);
+            }
+
+            $kodiNfo = $twig->render('kodi_movie.nfo.twig', array(
                 'movie' => $item,
                 'config' => $this->config,
                 'config_tmdb' => $this->config_tmdb,
             ));
+            file_put_contents($fileInfo['dirname'] . '/' . $fileInfo['filename'] . '.nfo', $kodiNfo);
 
-            $fileInfo = pathinfo($item['path']);
 
-            // -- Save XML file
-            file_put_contents($fileInfo['dirname'] . '/' . $fileInfo['filename'] . '.xml', $xml);
+//            file_put_contents($fileInfo['dirname'] . '/' . $fileInfo['filename'] . '.json', json_encode($item, JSON_PRETTY_PRINT));
+
             // -- Save Image file
             if (!isset($item['poster_path'])) {
                 continue;
