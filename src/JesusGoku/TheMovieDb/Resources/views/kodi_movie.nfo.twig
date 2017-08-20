@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<movie>
+    <title>{{ movie.title }}</title>
+    <originaltitle>{{ movie.original_title }}</originaltitle>
+    <rating>{{ movie.popularity }}</rating>
+    <year>{{ movie.year }}</year>
+    <votes>{{ movie.vote_count }}</votes>
+    <outline>{{ movie.tagline }}</outline>
+    <plot>{{ movie.overview }}</plot>
+    <tagline>{{ movie.tagline }}</tagline>
+    <runtime>{{ movie.runtime }}</runtime>
+
+    {% for item in movie.images.posters %}
+        <thumb aspect="poster" preview="{{ config_tmdb.images.base_url ~ config.poster_size_preview ~ item.file_path }}">{{ config_tmdb.images.base_url ~ config.poster_size ~ item.file_path }}</thumb>
+    {% endfor %}
+
+    <fanart>
+    {% for item in movie.images.backdrops %}
+        <thumb preview="{{ config_tmdb.images.base_url ~ config.backdrop_size_preview ~ item.file_path }}">{{ config_tmdb.images.base_url ~ config.backdrop_size ~ item.file_path }}</thumb>
+    {% endfor %}
+    </fanart>
+
+    <mpaa>{{ movie.mpaa }}</mpaa>
+    <id>{{ movie.imdb_id }}</id>
+
+    {% for item in movie.genres %}
+        <genre>{{ item.name }}</genre>
+    {% endfor %}
+
+    {% for item in movie.production_countries %}
+        <country>{{ item.name }}</country>
+    {% endfor %}
+
+    {% for item in movie.credits.crew %}
+        {% if item.job == 'Director' %}
+            <director>{{ item.name }}</director>
+        {% endif %}
+    {% endfor %}
+
+    <status>{{ movie.status }}</status>
+    <code>{{ movie.id }}</code>
+    <aired>{{ movie.release_date }}</aired>
+
+    {% for item in movie.production_companies %}
+        <studio>{{ item.name }}</studio>
+    {% endfor %}
+
+    {% if movie.trailers is defined and movie.trailers.youtube is defined and movie.trailers.youtube is not empty %}
+        <trailer>plugin://plugin.video.youtube/?action=play_video&amp;videoid={{ (movie.trailers.youtube | first).source }}</trailer>
+    {% endif %}
+
+    {% for item in movie.credits.cast %}
+        <actor>
+            <name>{{ item.name }}</name>
+            <role>{{ item.character }}</role>
+            <order>{{ item.order }}</order>
+            <thumb>{{ config_tmdb.images.base_url ~ 'original' ~ item.profile_path }}</thumb>
+        </actor>
+    {% endfor %}
+</movie>
