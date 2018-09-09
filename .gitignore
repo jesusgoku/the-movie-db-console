@@ -1,5 +1,6 @@
 # App
-/app/cache/*
+app/cache/*
+app/config/config.yml
 
 # Composer
 /vendor

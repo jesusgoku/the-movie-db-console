@@ -1,0 +1,9 @@
+the_movie_db:
+  themoviedb:
+    api_base_url: https://api.themoviedb.org/3
+    api_key: 
+    language: en
+  thetvdb:
+    api_base_url: https://api.thetvdb.com
+    api_key: 
+    language: en
