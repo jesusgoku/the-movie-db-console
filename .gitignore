@@ -4,7 +4,6 @@ app/config/config.yml
 
 # Composer
 /vendor
-/composer.lock
 
 # IDE
 /.idea
