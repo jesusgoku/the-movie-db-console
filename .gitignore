@@ -3,7 +3,7 @@ app/cache/*
 app/config/config.yml
 
 # Composer
-/vendor
+vendor
 
 # IDE
-/.idea
+.idea
